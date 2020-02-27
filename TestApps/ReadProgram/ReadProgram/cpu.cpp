@@ -1,25 +1,32 @@
 #include "cpu.h"
+#include <iostream>
 
 // constructor
 cpu::cpu() {
 	programCounter = 0x00;
-	stackPointer = 0x01FF;
-	isRunning = true;
+	_stackPointer = 0x01FF;
+	_isRunning = true;
 }
 
 // private
 uint8_t cpu::getNextOpcode() {
-	return ram[programCounter++];
+	return _ram[programCounter++];
 }
 
 // public
-void cpu::loadProgram() {
+void cpu::loadProgram(uint8_t *ram) {
+	for (int i = 0; i < 0xFFFF; i++) {
+		_ram[i] = ram[i];
 
+		// dont write the rest of the array because 0x00 is the terminate command
+		if (ram[i] == 0x00)
+			break;
+	}
 }
 
 void cpu::run() {
 
-	while (isRunning) {
+	while (_isRunning) {
 		opcode = getNextOpcode();
 
 		executeOpCode();
@@ -27,6 +34,8 @@ void cpu::run() {
 }
 
 void cpu::executeOpCode() {
+	std::cout << opcode << std::endl;
+
 	switch (opcode) {
 	case 0x01:	// ORA izx 6
 		break;
@@ -410,138 +419,138 @@ void cpu::executeOpCode() {
 		break;
 	case 0xBF:	// LAX aby 4*
 		break;
-	case 0xC0:
+	case 0xC0:	// CPY imm 2
 		break;
-	case 0xC1:
+	case 0xC1:	// CMP izx 6
 		break;
-	case 0xC2:
+	case 0xC2:	// NOP imm 2
 		break;
-	case 0xC3:
+	case 0xC3:	// DCP izx 8
 		break;
-	case 0xC4:
+	case 0xC4:	// CPY zp 3
 		break;
-	case 0xC5:
+	case 0xC5:	// CMP zp 3
 		break;
-	case 0xC6:
+	case 0xC6:	// DEC zp 5
 		break;
-	case 0xC7:
+	case 0xC7:	// DCP zp 5
 		break;
-	case 0xC8:
+	case 0xC8:	// INY 2
 		break;
-	case 0xC9:
+	case 0xC9:	// CMP imm 2
 		break;
-	case 0xCA:
+	case 0xCA:	// DEX 2
 		break;
-	case 0xCB:
+	case 0xCB:	// AXS imm 2
 		break;
-	case 0xCC:
+	case 0xCC:	// CPY abs 4
 		break;
-	case 0xCD:
+	case 0xCD:	// CMP abs 4
 		break;
-	case 0xCE:
+	case 0xCE:	// DEC abs 6
 		break;
-	case 0xCF:
+	case 0xCF:	// DCP abs 6
 		break;
-	case 0xD0:
+	case 0xD0:	// BNE rel 2*
 		break;
-	case 0xD1:
+	case 0xD1:	// CMP izy 5*
 		break;
-	case 0xD2:
+	case 0xD2:	// KIL 
 		break;
-	case 0xD3:
+	case 0xD3:	// DCP izy 8
 		break;
-	case 0xD4:
+	case 0xD4:	// NOP zpx 4
 		break;
-	case 0xD5:
+	case 0xD5:	// CMP zpx 4
 		break;
-	case 0xD6:
+	case 0xD6:	// DEC zpx 6
 		break;
-	case 0xD7:
+	case 0xD7:	// DCP zpx 6
 		break;
-	case 0xD8:
+	case 0xD8:	// CLD 2
 		break;
-	case 0xD9:
+	case 0xD9:	// CMP aby 2*
 		break;
-	case 0xDA:
+	case 0xDA:	// NOP 2
 		break;
-	case 0xDB:
+	case 0xDB:	// DCP aby 7
 		break;
-	case 0xDC:
+	case 0xDC:	// NOP abx 4*
 		break;
-	case 0xDD:
+	case 0xDD:	// CMP abx 4*
 		break;
-	case 0xDE:
+	case 0xDE:	// DEC abx 7
 		break;
-	case 0xDF:
+	case 0xDF:	// DCP abx 7
 		break;
-	case 0xE0:
+	case 0xE0:	// CPX imm 2
 		break;
-	case 0xE1:
+	case 0xE1:	// SBC izx 6
 		break;
-	case 0xE2:
+	case 0xE2:	// NOP imm 2
 		break;
-	case 0xE3:
+	case 0xE3:	// ISC izx 8
 		break;
-	case 0xE4:
+	case 0xE4:	// CPX zp 3
 		break;
-	case 0xE5:
+	case 0xE5:	// SBC zp 3
 		break;
-	case 0xE6:
+	case 0xE6:	// INC zp 5
 		break;
-	case 0xE7:
+	case 0xE7:	// ISC zp 5
 		break;
-	case 0xE8:
+	case 0xE8:	// INX 2
 		break;
-	case 0xE9:
+	case 0xE9:	// SBC imm 2
 		break;
-	case 0xEA:
+	case 0xEA:	// NOP 2
 		break;
-	case 0xEB:
+	case 0xEB:	// SBC imm 2
 		break;
-	case 0xEC:
+	case 0xEC:	// CPX abs 4
 		break;
-	case 0xED:
+	case 0xED:	// SBC abs 4
 		break;
-	case 0xEE:
+	case 0xEE:	// INC abs 6
 		break;
-	case 0xEF:
+	case 0xEF:	// ISC abs 6
 		break;
-	case 0xF0:
+	case 0xF0:	// BEQ rel 2*
 		break;
-	case 0xF1:
+	case 0xF1:	// SBC izy 5*
 		break;
-	case 0xF2:
+	case 0xF2:	// KIL
 		break;
-	case 0xF3:
+	case 0xF3:	// ISC izy 8
 		break;
-	case 0xF4:
+	case 0xF4:	// NOP zpx 4
 		break;
-	case 0xF5:
+	case 0xF5:	// SBC zpx 4
 		break;
-	case 0xF6:
+	case 0xF6:	// INC zpx 6
 		break;
-	case 0xF7:
+	case 0xF7:	// ISC zpx 6
 		break;
-	case 0xF8:
+	case 0xF8:	// SED 2
 		break;
-	case 0xF9:
+	case 0xF9:	// SBC aby 4*
 		break;
-	case 0xFA:
+	case 0xFA:	// NOP 2
 		break;
-	case 0xFB:
+	case 0xFB:	// ISC aby 7
 		break;
-	case 0xFC:
+	case 0xFC:	// NOP abx 4*
 		break;
-	case 0xFD:
+	case 0xFD:	// SBC abx 4*
 		break;
-	case 0xFE:
+	case 0xFE:	// INC abx 7
 		break;
-	case 0xFF:
+	case 0xFF:	// ISC abx 7
 		break;
 	case 0x00:	// BRK 7
 	default:
 		// terminate
-		isRunning = false;
+		_isRunning = false;
 		break;
 	}
 }

@@ -9,9 +9,19 @@ int main()
     std::cout << "Hello World!\n";
     cpu c = cpu();
 
+    uint8_t ram[0xFFFF];
+
+    // test program
+    ram[0] = 0x01;
+    ram[1] = 0x02;
+    ram[2] = 0x4A;
+    ram[3] = 0x00;
+
+    c.loadProgram(ram);
+
     c.run();
 
-
+    std::cout << "End of Program!\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
