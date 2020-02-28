@@ -1,4 +1,2 @@
-﻿  ReadProgram.cpp
-  cpu.cpp
-  Generating Code...
+﻿  cpu.cpp
   ReadProgram.vcxproj -> D:\Code\Github_hnoraa\6502Emulation\TestApps\ReadProgram\Debug\ReadProgram.exe

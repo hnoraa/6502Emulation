@@ -13,9 +13,12 @@ int main()
 
     // test program
     ram[0] = 0x01;
-    ram[1] = 0x02;
-    ram[2] = 0x4A;
-    ram[3] = 0x00;
+    ram[1] = 0x01;
+    ram[2] = 0x02;
+    ram[3] = 0x02;
+    ram[4] = 0x4A;
+    ram[5] = 0x4A;
+    ram[6] = 0x00;
 
     c.loadProgram(ram);
 

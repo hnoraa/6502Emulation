@@ -4,7 +4,7 @@
 // constructor
 cpu::cpu() {
 	programCounter = 0x00;
-	_stackPointer = 0x01FF;
+	_regS = 0x01FF;
 	_isRunning = true;
 }
 
