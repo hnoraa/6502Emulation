@@ -12,14 +12,8 @@ int main()
     uint8_t ram[0xFFFF];
 
     // test program
-    ram[0] = 0x01;
-    ram[1] = 0x01;
-    ram[2] = 0x02;
-    ram[3] = 0x02;
-    ram[4] = 0x4A;
-    ram[5] = 0x4A;
-    ram[6] = 0x00;
-
+    ram[0] = 0xA920;
+    ram[1] = 0x00;
     c.loadProgram(ram);
 
     c.run();

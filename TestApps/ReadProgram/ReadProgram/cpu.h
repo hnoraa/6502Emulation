@@ -14,8 +14,6 @@ public:
 
 	uint16_t programCounter;	// program counter register (holds current instruction)
 private:
-	uint8_t getNextOpcode();
-
 	uint8_t _ram[0xFFFF];		// 64k ($0000 - 00FF)
 	uint8_t _lowByte;
 	uint8_t _highByte;

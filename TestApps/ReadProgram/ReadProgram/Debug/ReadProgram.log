@@ -1,2 +1,4 @@
 ﻿  cpu.cpp
+D:\Code\Github_hnoraa\6502Emulation\TestApps\ReadProgram\ReadProgram\cpu.cpp(34,10): warning C4101: 'low': unreferenced local variable
+D:\Code\Github_hnoraa\6502Emulation\TestApps\ReadProgram\ReadProgram\cpu.cpp(35,10): warning C4101: 'high': unreferenced local variable
   ReadProgram.vcxproj -> D:\Code\Github_hnoraa\6502Emulation\TestApps\ReadProgram\Debug\ReadProgram.exe

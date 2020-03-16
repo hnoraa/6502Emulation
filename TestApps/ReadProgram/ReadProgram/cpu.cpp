@@ -8,11 +8,6 @@ cpu::cpu() {
 	_isRunning = true;
 }
 
-// private
-uint8_t cpu::getNextOpcode() {
-	return _ram[programCounter++];
-}
-
 // public
 void cpu::loadProgram(uint8_t *ram) {
 	for (int i = 0; i < 0xFFFF; i++) {
@@ -27,14 +22,17 @@ void cpu::loadProgram(uint8_t *ram) {
 void cpu::run() {
 
 	while (_isRunning) {
-		opcode = getNextOpcode();
-
+		opcode = _ram[programCounter++];
+		
 		executeOpCode();
 	}
 }
 
 void cpu::executeOpCode() {
 	std::cout << opcode << std::endl;
+
+	uint8_t low;
+	uint8_t high;
 
 	switch (opcode) {
 	case 0x01:	// ORA izx 6

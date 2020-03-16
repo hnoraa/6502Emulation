@@ -1,0 +1,3 @@
+﻿  loadRom.cpp
+D:\Code\Github_hnoraa\6502Emulation\TestApps\loadRom\loadRom.cpp(53,16): warning C4244: 'initializing': conversion from 'std::streamoff' to 'size_t', possible loss of data
+  loadRom.vcxproj -> D:\Code\Github_hnoraa\6502Emulation\TestApps\ReadProgram\Debug\loadRom.exe
