@@ -11,7 +11,7 @@ char* readFileBytes(const char*);
 
 int main()
 {
-    const char* fN = "D:\\Roms\\legendOfZelda.nes";
+    const char* fN = "";
     char cont;
     std::ifstream stream;
 
