@@ -61,7 +61,13 @@ void CPU6502::Clock()
 
 		// call the required operation function for this opcode
 		uint8_t additionalCycle2 = (this->*lookup[opcode].operate)();
+
+		// if the instruction and operation indicate the need for additional clock cycles, add a clock cycle
+		cycles += (additionalCycle1 & additionalCycle1);
 	}
+
+	// decrement cycles count
+	cycles--;
 }
 
 // bus coms
@@ -77,348 +83,447 @@ uint8_t CPU6502::Read(uint16_t addr)
 
 // addressing
 uint8_t CPU6502::IMP() {
-	// implied
-	return 0x00;
+	// implied - there is no data as part of the instruction
+
+	// implied means it could be operating on the accumulator
+	// set fetched to the contents of the accumulator
+	fetched = a;
+
+	return 0;
 }
 
 uint8_t CPU6502::IMM() {
-	// indirect
-	return 0x00;
+	// immediate - second byte of the instruction contains the operand
+
+	// advance the program counter to get the next byte because the data is the second byte
+	addrAbs = pc++;
+
+	return 0;
 }
 
 uint8_t CPU6502::ZP0() {
-	// zero page
-	return 0x00;
+	// zero page - in this mode, the page is 00 (the high byte) which is the zero page
+	// read the low byte from the instruction because we already know that the high byte is 0
+	addrAbs = Read(pc);	// read the program counter - get the low byte
+	pc++;				// increment to get the page offset (address within the page)
+	addrAbs &= 0x00ff;	// mask it with 0x00ff to get the correct address offset from the low byte
+
+	return 0;
 }
 
 uint8_t CPU6502::ZPX() {
-	// zero page x indexed
-	return 0x00;
+	// zero page x indexed - access the zero page with the x register and the low byte offset
+	// this is useful for iterating through regions of memory (i.e. an array)
+	addrAbs = (Read(pc) + x);	// read the program counter with the additional x register offset
+	pc++;						// increment to get the page offset (address within the page)
+	addrAbs &= 0x00ff;			// mask it with 0x00ff to get the correct address offset from the low byte
+
+	return 0;
 }
 
 uint8_t CPU6502::ZPY() {
-	// zero page y indexed
-	return 0x00;
+	// zero page y indexed - access the zero page with the y register and the low byte offset
+	// this is useful for iterating through regions of memory (i.e. an array)
+	addrAbs = (Read(pc) + y);	// read the program counter with the additional y register offset
+	pc++;						// increment to get the page offset (address within the page)
+	addrAbs &= 0x00ff;			// mask it with 0x00ff to get the correct address offset from the low byte
+
+	return 0;
 }
 
 uint8_t CPU6502::REL() {
 	// relative
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::ABS() {
-	// absolute
-	return 0x00;
+	// absolute - get the full address in its natural form
+	// address supplied with the instruction has the low and high bytes along with the instruction
+	// this is a 3 byte instruction
+	uint16_t low = Read(pc);
+	pc++;
+
+	uint16_t high = Read(pc);
+	pc++;
+
+	// or them together to get a 16 bit address word
+	// shift high bit left 8 to move it into the high space of the addr and OR the low byte to combine the 2 into one 16 bit address
+	addrAbs = (high << 8) | low;
+
+	return 0;
 }
 
 uint8_t CPU6502::ABX() {
 	// absoluter x indexed
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::ABY() {
 	// absolute y indexed
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::IND() {
 	// indirect
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::IZX() {
 	// indirect x indexed
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::IZY() {
 	// indirect y indexed
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 // opcodes
 uint8_t CPU6502::ADC()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::AND()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::ASL()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BCC()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BCS()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BEQ()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BIT()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BMI()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BNE()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BPL()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BRK()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BVC()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::BVS()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::CLC()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::CLD()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::CLI()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::CLV()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::CMP()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::CPX()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::CPY()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::DEC()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::DEX()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::DEY()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::EOR()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::INC()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::INX()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::INY()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::JMP()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::JSR()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::LDA()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::LDX()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::LDY()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::LSR()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::NOP()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::ORA()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::PHA()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::PHP()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::PLA()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::PLP()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::ROL()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::ROR()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::RTI()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::RTS()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::SBC()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::SEC()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::SED()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::SEI()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::STA()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::STX()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::STY()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::TAX()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::TAY()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::TSX()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::TXA()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::TXS()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::TYA()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
 uint8_t CPU6502::XXX()
 {
-	return 0x00;
+	uint8_t result = 0x00;
+	return result;
 }
 
