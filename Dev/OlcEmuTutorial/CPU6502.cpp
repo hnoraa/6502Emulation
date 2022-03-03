@@ -70,6 +70,24 @@ void CPU6502::Clock()
 	cycles--;
 }
 
+// flags
+uint8_t CPU6502::GetFlag(FLAGS6502 flag)
+{
+	return flag;
+}
+
+void CPU6502::SetFlag(FLAGS6502 flag, bool v)
+{
+	if (v)
+	{
+
+	}
+	else
+	{
+
+	}
+}
+
 // bus coms
 void CPU6502::Write(uint16_t addr, uint8_t data)
 {
@@ -320,8 +338,9 @@ uint8_t CPU6502::BVS()
 
 uint8_t CPU6502::CLC()
 {
-	uint8_t result = 0x00;
-	return result;
+	// clear carry bit
+	
+	return 0;
 }
 
 uint8_t CPU6502::CLD()
