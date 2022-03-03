@@ -155,21 +155,63 @@ uint8_t CPU6502::ABS() {
 }
 
 uint8_t CPU6502::ABX() {
-	// absoluter x indexed
-	uint8_t result = 0x00;
-	return result;
+	// absolute x indexed - get the full address with the offset from the x register
+	// address supplied with the instruction has the low and high bytes along with the instruction
+	// this is a 3 byte instruction
+	uint16_t low = Read(pc);
+	pc++;
+
+	uint16_t high = Read(pc);
+	pc++;
+
+	// or them together to get a 16 bit address word
+	// shift high bit left 8 to move it into the high space of the addr and OR the low byte to combine the 2 into one 16 bit address
+	addrAbs = (high << 8) | low;
+	
+	// increment the address with the value in the x register
+	addrAbs += x;
+	
+	// caveat - if the address has changed to a different page, indicate that there may be an additional clock cycle
+	// this checks to see if the high byte has changed (mask the address with the high byte)
+	if((addrAbs & 0xff00) != (high << 8)) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 uint8_t CPU6502::ABY() {
-	// absolute y indexed
-	uint8_t result = 0x00;
-	return result;
+	// absolute y indexed - get the full address with the offset from the y register
+	// address supplied with the instruction has the low and high bytes along with the instruction
+	// this is a 3 byte instruction
+	uint16_t low = Read(pc);
+	pc++;
+
+	uint16_t high = Read(pc);
+	pc++;
+
+	// or them together to get a 16 bit address word
+	// shift high bit left 8 to move it into the high space of the addr and OR the low byte to combine the 2 into one 16 bit address
+	addrAbs = (high << 8) | low;
+	
+	// increment the address with the value in the y register
+	addrAbs += y;
+	
+	// caveat - if the address has changed to a different page, indicate that there may be an additional clock cycle
+	if((addrAbs & 0xff00) != (high << 8)) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 uint8_t CPU6502::IND() {
 	// indirect
-	uint8_t result = 0x00;
-	return result;
+	uint16_t low = Read(pc);
+	pc++;
+	uint16_t high = Read(pc);
+	
+	addrAbs = (high << 8) | low; 
 }
 
 uint8_t CPU6502::IZX() {
