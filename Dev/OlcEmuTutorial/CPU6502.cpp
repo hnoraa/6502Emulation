@@ -206,12 +206,25 @@ uint8_t CPU6502::ABY() {
 }
 
 uint8_t CPU6502::IND() {
-	// indirect
-	uint16_t low = Read(pc);
-	pc++;
-	uint16_t high = Read(pc);
+	// indirect - this is essentially how the cpu does pointers
+	// second byte is memory location, third byte is page (high byte)
+	// the supplied addess with the instruction is a pointer
+	// query that address to get the actual address in memory
 	
-	addrAbs = (high << 8) | low; 
+	// this first part is similar to abs
+	uint16_t lowPtr = Read(pc);
+	pc++;
+	uint16_t highPtr = Read(pc);
+	pc++;
+	
+	uint16_t ptr = (highPtr << 8) | lowPtr; 
+	
+	// then set the address to the ptr value 
+	// this is reading the 16 bit data at the original address
+	
+	addrAbs = (Read(ptr + 1) << 8) | Read(ptr + 0);
+	
+	return 0;
 }
 
 uint8_t CPU6502::IZX() {
