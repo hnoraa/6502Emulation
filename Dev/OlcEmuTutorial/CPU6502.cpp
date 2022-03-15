@@ -80,11 +80,11 @@ void CPU6502::SetFlag(FLAGS6502 flag, bool v)
 {
 	if (v)
 	{
-
+		status |= flag;
 	}
 	else
 	{
-
+		status &= ~flag;
 	}
 }
 
@@ -239,22 +239,63 @@ uint8_t CPU6502::IND() {
 	
 	// then set the address to the ptr value 
 	// this is reading the 16 bit data at the original address
-	
-	addrAbs = (Read(ptr + 1) << 8) | Read(ptr + 0);
+	// page boundary hardware bug
+	if (lowPtr == 0x00ff)
+	{
+		// if the low byte is equal to 0xff, add one to the high byte, effectively changing its page
+		// AND the 0xff00 mask to the pointer and shift left 8 bits to inc the high byte
+		addrAbs = (Read(ptr & 0xff00) << 8) | Read(ptr + 0);
+	}
+	else
+	{
+		// act naturally
+		addrAbs = (Read(ptr + 1) << 8) | Read(ptr + 0);
+	}
 	
 	return 0;
 }
 
 uint8_t CPU6502::IZX() {
-	// indirect x indexed
-	uint8_t result = 0x00;
-	return result;
+	// indirect addressing of the x register on zero page
+	// get the supplied address which exists on the zero page
+	uint16_t addrIz = Read(pc);
+	pc++;
+
+	// get the low byte and the x register offset
+	// offset the low (one byte address) by the contents of the x register
+	uint16_t low = Read((uint16_t)(addrIz +(uint16_t)x) & 0x00ff);
+	uint16_t high = Read((uint16_t)(addrIz + (uint16_t)x + 1) & 0x00ff);
+
+	// combine the high and low to get the 16 bit address
+	addrAbs = (high << 8) | low;
+
+	return 0;
 }
 
 uint8_t CPU6502::IZY() {
-	// indirect y indexed
-	uint8_t result = 0x00;
-	return result;
+	// indirect addressing of zero page with y register
+	// get zero page address (which is 8 bits) and add y register value to the address
+	uint16_t addrIz = Read(pc);
+	pc++;
+
+	// the low byte is the current address, the high byte is the current + 1
+	uint16_t low = Read(addrIz & 0x00ff);
+	uint16_t high = Read((addrIz + 1) & 0x00ff);
+
+	// form the 16 bit address from high and low
+	// then offest it byt the contents of the y register
+	addrAbs = (high << 8) | low;
+	addrAbs += y;
+
+	// may potentially cross a page boundary
+	if ((addrAbs & 0xff00) != (high << 8))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 // opcodes
