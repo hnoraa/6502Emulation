@@ -150,9 +150,21 @@ uint8_t CPU6502::ZPY() {
 }
 
 uint8_t CPU6502::REL() {
-	// relative
-	uint8_t result = 0x00;
-	return result;
+	// relative - this is only used for branch instructions
+	// the second byt of the instruction is the operand 
+	// which is an offset added to the program counter 
+	// when the PC is set at the next instruction
+	// branching cant jump anywhere farther than +/- 127 memory loactions relative to the current location in memory
+	addrRel = Read(pc);
+	pc++;
+
+	// in order for the relative address to jump it needs to be signed
+	// branching usually has bit 7 (0x80) set to 1 so and it with the mask to get sign and then or it with the 16 bit mask to get the correct high byte
+	if (addrRel & 0x80)
+	{
+		addrRel |= 0xff00;
+	}
+	return 0;
 }
 
 uint8_t CPU6502::ABS() {
@@ -211,32 +223,36 @@ uint8_t CPU6502::ABY() {
 	// or them together to get a 16 bit address word
 	// shift high bit left 8 to move it into the high space of the addr and OR the low byte to combine the 2 into one 16 bit address
 	addrAbs = (high << 8) | low;
-	
+
 	// increment the address with the value in the y register
 	addrAbs += y;
-	
+
 	// caveat - if the address has changed to a different page, indicate that there may be an additional clock cycle
-	if((addrAbs & 0xff00) != (high << 8)) {
+	if ((addrAbs & 0xff00) != (high << 8))
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-uint8_t CPU6502::IND() {
+uint8_t CPU6502::IND()
+{
 	// indirect - this is essentially how the cpu does pointers
 	// second byte is memory location, third byte is page (high byte)
 	// the supplied addess with the instruction is a pointer
 	// query that address to get the actual address in memory
-	
+
 	// this first part is similar to abs
 	uint16_t lowPtr = Read(pc);
 	pc++;
 	uint16_t highPtr = Read(pc);
 	pc++;
-	
-	uint16_t ptr = (highPtr << 8) | lowPtr; 
-	
+
+	uint16_t ptr = (highPtr << 8) | lowPtr;
+
 	// then set the address to the ptr value 
 	// this is reading the 16 bit data at the original address
 	// page boundary hardware bug
@@ -251,11 +267,12 @@ uint8_t CPU6502::IND() {
 		// act naturally
 		addrAbs = (Read(ptr + 1) << 8) | Read(ptr + 0);
 	}
-	
+
 	return 0;
 }
 
-uint8_t CPU6502::IZX() {
+uint8_t CPU6502::IZX()
+{
 	// indirect addressing of the x register on zero page
 	// get the supplied address which exists on the zero page
 	uint16_t addrIz = Read(pc);
@@ -263,7 +280,7 @@ uint8_t CPU6502::IZX() {
 
 	// get the low byte and the x register offset
 	// offset the low (one byte address) by the contents of the x register
-	uint16_t low = Read((uint16_t)(addrIz +(uint16_t)x) & 0x00ff);
+	uint16_t low = Read((uint16_t)(addrIz + (uint16_t)x) & 0x00ff);
 	uint16_t high = Read((uint16_t)(addrIz + (uint16_t)x + 1) & 0x00ff);
 
 	// combine the high and low to get the 16 bit address
@@ -272,7 +289,8 @@ uint8_t CPU6502::IZX() {
 	return 0;
 }
 
-uint8_t CPU6502::IZY() {
+uint8_t CPU6502::IZY()
+{
 	// indirect addressing of zero page with y register
 	// get zero page address (which is 8 bits) and add y register value to the address
 	uint16_t addrIz = Read(pc);
@@ -298,347 +316,391 @@ uint8_t CPU6502::IZY() {
 	}
 }
 
+// fetch routine - gets the instruction from the lookup table
+uint8_t CPU6502::Fetch()
+{
+	// fetch instructions for all operations that do not use implied addressing (because implied means theres nothing to fetch)
+	if (!(lookup[opcode].addrmode == &CPU6502::IMP)) {
+		fetched = Read(addrAbs);
+	}
+
+	return fetched;
+}
+
 // opcodes
 uint8_t CPU6502::ADC()
 {
-	uint8_t result = 0x00;
-	return result;
+	// ADC - add with carry
+	return 0;
 }
 
 uint8_t CPU6502::AND()
 {
-	uint8_t result = 0x00;
-	return result;
+	// AND - logical and
+	// between accumulator and data that's been fetched
+	// fetch the data - which populates the fetched variable
+	Fetch();
+
+	// bitwise AND
+	a = a & fetched;
+
+	// update the status register if required
+	// if the result of a is 0, set the zero flag (Z) on or high
+	SetFlag(Z, a == 0x00);
+
+	// if bit 7 is equal to 1 (bit 7 is 0x80)
+	SetFlag(N, a & 0x80);
+
+	// this instruction may require an additional clock cycle
+	return 1;
 }
 
 uint8_t CPU6502::ASL()
 {
-	uint8_t result = 0x00;
-	return result;
+	// ASL - arithmetic shift left
+	return 0;
 }
 
 uint8_t CPU6502::BCC()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BCC - branch if carry clear
+	return 0;
 }
 
 uint8_t CPU6502::BCS()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BCS - branch if carry set
+	return 0;
 }
 
 uint8_t CPU6502::BEQ()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BEQ - branch if equal to 0
+	return 0;
 }
 
 uint8_t CPU6502::BIT()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BIT - bit test
+	return 0;
 }
 
 uint8_t CPU6502::BMI()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BMI - branch if minus
+	return 0;
 }
 
 uint8_t CPU6502::BNE()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BNE - branch if not equal to 0
+	return 0;
 }
 
 uint8_t CPU6502::BPL()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BPL - branch if plus
+	return 0;
 }
 
 uint8_t CPU6502::BRK()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BRK - break
+	return 0;
 }
 
 uint8_t CPU6502::BVC()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BVC - branch if overflow clear
+	return 0;
 }
 
 uint8_t CPU6502::BVS()
 {
-	uint8_t result = 0x00;
-	return result;
+	// BVS - branch if overflow set
+	return 0;
 }
 
 uint8_t CPU6502::CLC()
 {
-	// clear carry bit
-	
+	// CLC - clear carry flag
+	SetFlag(C, false);
 	return 0;
 }
 
 uint8_t CPU6502::CLD()
 {
-	uint8_t result = 0x00;
-	return result;
+	// CLD - clear decimal flag
+	SetFlag(D, false);
+	return 0;
 }
 
 uint8_t CPU6502::CLI()
 {
-	uint8_t result = 0x00;
-	return result;
+	// CLI - clear interrupt mask
+	SetFlag(I, false);
+	return 0;
 }
 
 uint8_t CPU6502::CLV()
 {
-	uint8_t result = 0x00;
-	return result;
+	// CLV - clear overflow flag
+	SetFlag(V, false);
+	return 0;
 }
 
 uint8_t CPU6502::CMP()
 {
-	uint8_t result = 0x00;
-	return result;
+	// CMP - compare accumulator to memory
+	return 0;
 }
 
 uint8_t CPU6502::CPX()
 {
-	uint8_t result = 0x00;
-	return result;
+	// CPX - compare with x register
+	return 0;
 }
 
 uint8_t CPU6502::CPY()
 {
-	uint8_t result = 0x00;
-	return result;
+	// CPY - compare with y register
+	return 0;
 }
 
 uint8_t CPU6502::DEC()
 {
-	uint8_t result = 0x00;
-	return result;
+	// DEC - decrement by 1
+	a--;
+	return 0;
 }
 
 uint8_t CPU6502::DEX()
 {
-	uint8_t result = 0x00;
-	return result;
+	// DEX - decrement x register by 1
+	x--;
+	return 0;
 }
 
 uint8_t CPU6502::DEY()
 {
-	uint8_t result = 0x00;
-	return result;
+	// DEY - decrement y register by 1
+	y--;
+	return 0;
 }
 
 uint8_t CPU6502::EOR()
 {
-	uint8_t result = 0x00;
-	return result;
+	// EOR - exclusive or
+	return 0;
 }
 
 uint8_t CPU6502::INC()
 {
-	uint8_t result = 0x00;
-	return result;
+	// INC - increment by 1
+	a++;
+	return 0;
 }
 
 uint8_t CPU6502::INX()
 {
-	uint8_t result = 0x00;
-	return result;
+	// INX - increment x register by 1
+	x++;
+	return 0;
 }
 
 uint8_t CPU6502::INY()
 {
-	uint8_t result = 0x00;
-	return result;
+	// INY - increment y register by 1
+	y++;
+	return 0;
 }
 
 uint8_t CPU6502::JMP()
 {
-	uint8_t result = 0x00;
-	return result;
+	// JMP - jump to new location
+	return 0;
 }
 
 uint8_t CPU6502::JSR()
 {
-	uint8_t result = 0x00;
-	return result;
+	// JSR - jump to sub routine
+	return 0;
 }
 
 uint8_t CPU6502::LDA()
 {
-	uint8_t result = 0x00;
-	return result;
+	// LDA - load accumulator
+	return 0;
 }
 
 uint8_t CPU6502::LDX()
 {
-	uint8_t result = 0x00;
-	return result;
+	// LDX - load x register
+	return 0;
 }
 
 uint8_t CPU6502::LDY()
 {
-	uint8_t result = 0x00;
-	return result;
+	// LDY - load y register
+	return 0;
 }
 
 uint8_t CPU6502::LSR()
 {
-	uint8_t result = 0x00;
-	return result;
+	// LSR - arithmetic shift left
+	return 0;
 }
 
 uint8_t CPU6502::NOP()
 {
-	uint8_t result = 0x00;
-	return result;
+	// NOP - no operation
+	return 0;
 }
 
 uint8_t CPU6502::ORA()
 {
-	uint8_t result = 0x00;
-	return result;
+	// ORA - logical or
+	return 0;
 }
 
 uint8_t CPU6502::PHA()
 {
-	uint8_t result = 0x00;
-	return result;
+	// PHA - push accumulator on to stack
+	return 0;
 }
 
 uint8_t CPU6502::PHP()
 {
-	uint8_t result = 0x00;
-	return result;
+	// PHP - push processor status on to stack
+	return 0;
 }
 
 uint8_t CPU6502::PLA()
 {
-	uint8_t result = 0x00;
-	return result;
+	// PLA - pull accumulator from stack (pop)
+	return 0;
 }
 
 uint8_t CPU6502::PLP()
 {
-	uint8_t result = 0x00;
-	return result;
+	// PLP - pull processor status from stack (pop)
+	return 0;
 }
 
 uint8_t CPU6502::ROL()
 {
-	uint8_t result = 0x00;
-	return result;
+	// ROL - rotate left through carry
+	return 0;
 }
 
 uint8_t CPU6502::ROR()
 {
-	uint8_t result = 0x00;
-	return result;
+	// ROR - rotate right through carry
+	return 0;
 }
 
 uint8_t CPU6502::RTI()
 {
-	uint8_t result = 0x00;
-	return result;
+	// RTI - return from interrupt
+	return 0;
 }
 
 uint8_t CPU6502::RTS()
 {
-	uint8_t result = 0x00;
-	return result;
+	// RTS - return from subroutine
+	return 0;
 }
 
 uint8_t CPU6502::SBC()
 {
-	uint8_t result = 0x00;
-	return result;
+	// SBC - subtract with carry
+	return 0;
 }
 
 uint8_t CPU6502::SEC()
 {
-	uint8_t result = 0x00;
-	return result;
+	// SET - set carry flag
+	SetFlag(C, true);
+	return 0;
 }
 
 uint8_t CPU6502::SED()
 {
-	uint8_t result = 0x00;
-	return result;
+	// SED - set decimal flag
+	SetFlag(D, true);
+	return 0;
 }
 
 uint8_t CPU6502::SEI()
 {
-	uint8_t result = 0x00;
-	return result;
+	// SEI - set interrupt mask (disable interrupts)
+	SetFlag(I, true);
+	return 0;
 }
 
 uint8_t CPU6502::STA()
 {
-	uint8_t result = 0x00;
-	return result;
+	// STA - store accumulator
+	return 0;
 }
 
 uint8_t CPU6502::STX()
 {
-	uint8_t result = 0x00;
-	return result;
+	// STX - store x register
+	return 0;
 }
 
 uint8_t CPU6502::STY()
 {
-	uint8_t result = 0x00;
-	return result;
+	// STY - store y register
+	return 0;
 }
 
 uint8_t CPU6502::TAX()
 {
-	uint8_t result = 0x00;
-	return result;
+	// TAX - transfer accumulator to x register
+	x = a;
+	return 0;
 }
 
 uint8_t CPU6502::TAY()
 {
-	uint8_t result = 0x00;
-	return result;
+	// TAY - transfer accumulator to y register
+	y = a;
+	return 0;
 }
 
 uint8_t CPU6502::TSX()
 {
-	uint8_t result = 0x00;
-	return result;
+	// TSX - transfer stack pointer to x register
+	x = sp;
+	return 0;
 }
 
 uint8_t CPU6502::TXA()
 {
-	uint8_t result = 0x00;
-	return result;
+	// TXA - transfer x register to accumulator
+	a = x;
+	return 0;
 }
 
 uint8_t CPU6502::TXS()
 {
-	uint8_t result = 0x00;
-	return result;
+	// TXS - transfer x register to stack pointer
+	sp = x;
+	return 0;
 }
 
 uint8_t CPU6502::TYA()
 {
-	uint8_t result = 0x00;
-	return result;
+	// TYA - transfer y register to accumulator
+	a = y;
+	return 0;
 }
 
 uint8_t CPU6502::XXX()
 {
-	uint8_t result = 0x00;
-	return result;
+	// XXX - illegal
+	return 0;
 }
 
