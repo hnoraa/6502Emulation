@@ -363,19 +363,79 @@ uint8_t CPU6502::ASL()
 
 uint8_t CPU6502::BCC()
 {
-	// BCC - branch if carry clear
+	// BCC - branch if carry clear, C flag == 0
+	// branch instructions directly modify the cycles variable
+	if (GetFlag(C) == 0)
+	{
+		// if the carry flag is unset
+		cycles++;
+
+		// get the absolute address from the current program counter and the relative address (addrRel is the offset)
+		addrAbs = pc + addrRel;
+
+		// does the branch need to pass a page boundary?
+		if ((addrAbs & 0xff00) != (pc & 0xff00))
+		{
+			// page boundary crossed, increment cycles
+			cycles++;
+		}
+
+		// set the program counter to the new address (where we branched to)
+		pc = addrAbs;
+	}
+
 	return 0;
 }
 
 uint8_t CPU6502::BCS()
 {
-	// BCS - branch if carry set
+	// BCS - branch if carry set, C flag == 1
+	// branch instructions directly modify the cycles variable
+	if (GetFlag(C) == 1)
+	{
+		// if the carry flag is set
+		cycles++;
+
+		// get the absolute address from the current program counter and the relative address (addrRel is the offset)
+		addrAbs = pc + addrRel;
+
+		// does the branch need to pass a page boundary?
+		if ((addrAbs & 0xff00) != (pc & 0xff00))
+		{
+			// page boundary crossed, increment cycles
+			cycles++;
+		}
+
+		// set the program counter to the new address (where we branched to)
+		pc = addrAbs;
+	}
+
 	return 0;
 }
 
 uint8_t CPU6502::BEQ()
 {
-	// BEQ - branch if equal to 0
+	// BEQ - branch if equal to 0, Z flag == 1
+	// branch instructions directly modify the cycles variable
+	if (GetFlag(Z) == 1)
+	{
+		// if the zero flag is set
+		cycles++;
+
+		// get the absolute address from the current program counter and the relative address (addrRel is the offset)
+		addrAbs = pc + addrRel;
+
+		// does the branch need to pass a page boundary?
+		if ((addrAbs & 0xff00) != (pc & 0xff00))
+		{
+			// page boundary crossed, increment cycles
+			cycles++;
+		}
+
+		// set the program counter to the new address (where we branched to)
+		pc = addrAbs;
+	}
+
 	return 0;
 }
 
@@ -387,19 +447,79 @@ uint8_t CPU6502::BIT()
 
 uint8_t CPU6502::BMI()
 {
-	// BMI - branch if minus
+	// BMI - branch if minus, N == 1
+	// branch instructions directly modify the cycles variable
+	if (GetFlag(N) == 1)
+	{
+		// if the negative flag is set
+		cycles++;
+
+		// get the absolute address from the current program counter and the relative address (addrRel is the offset)
+		addrAbs = pc + addrRel;
+
+		// does the branch need to pass a page boundary?
+		if ((addrAbs & 0xff00) != (pc & 0xff00))
+		{
+			// page boundary crossed, increment cycles
+			cycles++;
+		}
+
+		// set the program counter to the new address (where we branched to)
+		pc = addrAbs;
+	}
+
 	return 0;
 }
 
 uint8_t CPU6502::BNE()
 {
-	// BNE - branch if not equal to 0
+	// BNE - branch if not equal to 0, Z flag == 0
+	// branch instructions directly modify the cycles variable
+	if (GetFlag(Z) == 0)
+	{
+		// if the zero flag is unset
+		cycles++;
+
+		// get the absolute address from the current program counter and the relative address (addrRel is the offset)
+		addrAbs = pc + addrRel;
+
+		// does the branch need to pass a page boundary?
+		if ((addrAbs & 0xff00) != (pc & 0xff00))
+		{
+			// page boundary crossed, increment cycles
+			cycles++;
+		}
+
+		// set the program counter to the new address (where we branched to)
+		pc = addrAbs;
+	}
+
 	return 0;
 }
 
 uint8_t CPU6502::BPL()
 {
-	// BPL - branch if plus
+	// BPL - branch if plus, N == 0
+	// branch instructions directly modify the cycles variable
+	if (GetFlag(N) == 0)
+	{
+		// if the negative flag is un set
+		cycles++;
+
+		// get the absolute address from the current program counter and the relative address (addrRel is the offset)
+		addrAbs = pc + addrRel;
+
+		// does the branch need to pass a page boundary?
+		if ((addrAbs & 0xff00) != (pc & 0xff00))
+		{
+			// page boundary crossed, increment cycles
+			cycles++;
+		}
+
+		// set the program counter to the new address (where we branched to)
+		pc = addrAbs;
+	}
+
 	return 0;
 }
 
@@ -411,13 +531,53 @@ uint8_t CPU6502::BRK()
 
 uint8_t CPU6502::BVC()
 {
-	// BVC - branch if overflow clear
+	// BVC - branch if overflow clear, V flag == 0
+	// branch instructions directly modify the cycles variable
+	if (GetFlag(V) == 0)
+	{
+		// if the overflow flag is unset
+		cycles++;
+
+		// get the absolute address from the current program counter and the relative address (addrRel is the offset)
+		addrAbs = pc + addrRel;
+
+		// does the branch need to pass a page boundary?
+		if ((addrAbs & 0xff00) != (pc & 0xff00))
+		{
+			// page boundary crossed, increment cycles
+			cycles++;
+		}
+
+		// set the program counter to the new address (where we branched to)
+		pc = addrAbs;
+	}
+
 	return 0;
 }
 
 uint8_t CPU6502::BVS()
 {
-	// BVS - branch if overflow set
+	// BVS - branch if overflow set, V flag == 1
+	// branch instructions directly modify the cycles variable
+	if (GetFlag(V) == 1)
+	{
+		// if the overflow flag is set
+		cycles++;
+
+		// get the absolute address from the current program counter and the relative address (addrRel is the offset)
+		addrAbs = pc + addrRel;
+
+		// does the branch need to pass a page boundary?
+		if ((addrAbs & 0xff00) != (pc & 0xff00))
+		{
+			// page boundary crossed, increment cycles
+			cycles++;
+		}
+
+		// set the program counter to the new address (where we branched to)
+		pc = addrAbs;
+	}
+
 	return 0;
 }
 
