@@ -35,7 +35,9 @@ CPU6502::~CPU6502()
 
 }
 
-// inputs
+/**************************************************
+* RESET
+**************************************************/
 void CPU6502::Reset()
 {
 	a = 0x00;
@@ -46,7 +48,9 @@ void CPU6502::Reset()
 	status = 0x00;
 }
 
-// clock 
+/**************************************************
+* CLOCK
+**************************************************/
 void CPU6502::Clock()
 {
 	// execute the instruction when cycles is 0
@@ -57,7 +61,7 @@ void CPU6502::Clock()
 		cycles = lookup[opcode].cycles;		// set the number of cycles from the opcode matrix
 
 		// call the required address mode function for this opcode
-		uint8_t additionalCycle1 = (this->*lookup[opcode].addrmode)();	
+		uint8_t additionalCycle1 = (this->*lookup[opcode].addrmode)();
 
 		// call the required operation function for this opcode
 		uint8_t additionalCycle2 = (this->*lookup[opcode].operate)();
@@ -70,7 +74,9 @@ void CPU6502::Clock()
 	cycles--;
 }
 
-// flags
+/**************************************************
+* FLAGS
+**************************************************/
 uint8_t CPU6502::GetFlag(FLAGS6502 flag)
 {
 	return flag;
@@ -88,7 +94,9 @@ void CPU6502::SetFlag(FLAGS6502 flag, bool v)
 	}
 }
 
-// bus coms
+/**************************************************
+* BUS COMS
+**************************************************/
 void CPU6502::Write(uint16_t addr, uint8_t data)
 {
 	bus->Write(addr, data);
@@ -99,8 +107,11 @@ uint8_t CPU6502::Read(uint16_t addr)
 	return bus->Read(addr, false);
 }
 
-// addressing
-uint8_t CPU6502::IMP() {
+/**************************************************
+* ADDRESSING
+**************************************************/
+uint8_t CPU6502::IMP()
+{
 	// implied - there is no data as part of the instruction
 
 	// implied means it could be operating on the accumulator
@@ -110,7 +121,8 @@ uint8_t CPU6502::IMP() {
 	return 0;
 }
 
-uint8_t CPU6502::IMM() {
+uint8_t CPU6502::IMM()
+{
 	// immediate - second byte of the instruction contains the operand
 
 	// advance the program counter to get the next byte because the data is the second byte
@@ -119,7 +131,8 @@ uint8_t CPU6502::IMM() {
 	return 0;
 }
 
-uint8_t CPU6502::ZP0() {
+uint8_t CPU6502::ZP0()
+{
 	// zero page - in this mode, the page is 00 (the high byte) which is the zero page
 	// read the low byte from the instruction because we already know that the high byte is 0
 	addrAbs = Read(pc);	// read the program counter - get the low byte
@@ -129,7 +142,8 @@ uint8_t CPU6502::ZP0() {
 	return 0;
 }
 
-uint8_t CPU6502::ZPX() {
+uint8_t CPU6502::ZPX()
+{
 	// zero page x indexed - access the zero page with the x register and the low byte offset
 	// this is useful for iterating through regions of memory (i.e. an array)
 	addrAbs = (Read(pc) + x);	// read the program counter with the additional x register offset
@@ -139,7 +153,8 @@ uint8_t CPU6502::ZPX() {
 	return 0;
 }
 
-uint8_t CPU6502::ZPY() {
+uint8_t CPU6502::ZPY()
+{
 	// zero page y indexed - access the zero page with the y register and the low byte offset
 	// this is useful for iterating through regions of memory (i.e. an array)
 	addrAbs = (Read(pc) + y);	// read the program counter with the additional y register offset
@@ -149,7 +164,8 @@ uint8_t CPU6502::ZPY() {
 	return 0;
 }
 
-uint8_t CPU6502::REL() {
+uint8_t CPU6502::REL()
+{
 	// relative - this is only used for branch instructions
 	// the second byt of the instruction is the operand 
 	// which is an offset added to the program counter 
@@ -167,7 +183,8 @@ uint8_t CPU6502::REL() {
 	return 0;
 }
 
-uint8_t CPU6502::ABS() {
+uint8_t CPU6502::ABS()
+{
 	// absolute - get the full address in its natural form
 	// address supplied with the instruction has the low and high bytes along with the instruction
 	// this is a 3 byte instruction
@@ -184,7 +201,8 @@ uint8_t CPU6502::ABS() {
 	return 0;
 }
 
-uint8_t CPU6502::ABX() {
+uint8_t CPU6502::ABX()
+{
 	// absolute x indexed - get the full address with the offset from the x register
 	// address supplied with the instruction has the low and high bytes along with the instruction
 	// this is a 3 byte instruction
@@ -197,20 +215,24 @@ uint8_t CPU6502::ABX() {
 	// or them together to get a 16 bit address word
 	// shift high bit left 8 to move it into the high space of the addr and OR the low byte to combine the 2 into one 16 bit address
 	addrAbs = (high << 8) | low;
-	
+
 	// increment the address with the value in the x register
 	addrAbs += x;
-	
+
 	// caveat - if the address has changed to a different page, indicate that there may be an additional clock cycle
 	// this checks to see if the high byte has changed (mask the address with the high byte)
-	if((addrAbs & 0xff00) != (high << 8)) {
+	if ((addrAbs & 0xff00) != (high << 8))
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 0;
 	}
 }
 
-uint8_t CPU6502::ABY() {
+uint8_t CPU6502::ABY()
+{
 	// absolute y indexed - get the full address with the offset from the y register
 	// address supplied with the instruction has the low and high bytes along with the instruction
 	// this is a 3 byte instruction
@@ -316,18 +338,24 @@ uint8_t CPU6502::IZY()
 	}
 }
 
-// fetch routine - gets the instruction from the lookup table
+/**************************************************
+* FETCH ROUTINE
+* gets the instruction from the lookup table
+**************************************************/
 uint8_t CPU6502::Fetch()
 {
 	// fetch instructions for all operations that do not use implied addressing (because implied means theres nothing to fetch)
-	if (!(lookup[opcode].addrmode == &CPU6502::IMP)) {
+	if (!(lookup[opcode].addrmode == &CPU6502::IMP))
+	{
 		fetched = Read(addrAbs);
 	}
 
 	return fetched;
 }
 
-// opcodes
+/**************************************************
+* OPCODES
+**************************************************/
 uint8_t CPU6502::ADC()
 {
 	// ADC - add with carry
@@ -442,7 +470,24 @@ uint8_t CPU6502::BEQ()
 uint8_t CPU6502::BIT()
 {
 	// BIT - bit test
-	return 0;
+	// performs a bitwise AND between the accumulator and the specified byte
+	// the result gets stored in the accumulator
+
+	// fetch the data - which populates the fetched variable
+	Fetch();
+
+	// perform the AND on accumulator and the fetched data
+	a = a & fetched;
+
+	// update the status register if required
+	// if the result of a is 0, set the zero flag (Z) on or high
+	SetFlag(Z, a == 0x00);
+
+	// if bit 7 is equal to 1 (bit 7 is 0x80)
+	SetFlag(N, a & 0x80);
+
+	// this instruction may require an additional clock cycle
+	return 1;
 }
 
 uint8_t CPU6502::BMI()
@@ -651,7 +696,24 @@ uint8_t CPU6502::DEY()
 uint8_t CPU6502::EOR()
 {
 	// EOR - exclusive or
-	return 0;
+	// performs a bitwise XOR between the accumulator and the specified byte
+	// the result gets stored in the accumulator
+	
+	// fetch the data - which populates the fetched variable
+	Fetch();
+
+	// perform the XOR on accumulator and the fetched data
+	a = a ^ fetched;
+
+	// update the status register if required
+	// if the result of a is 0, set the zero flag (Z) on or high
+	SetFlag(Z, a == 0x00);
+
+	// if bit 7 is equal to 1 (bit 7 is 0x80)
+	SetFlag(N, a & 0x80);
+
+	// this instruction may require an additional clock cycle
+	return 1;
 }
 
 uint8_t CPU6502::INC()
@@ -720,7 +782,24 @@ uint8_t CPU6502::NOP()
 uint8_t CPU6502::ORA()
 {
 	// ORA - logical or
-	return 0;
+	// performs a bitwise OR between the accumulator and the specified byte
+	// the result gets stored in the accumulator
+
+	// fetch the data - which populates the fetched variable
+	Fetch();
+
+	// perform the OR on accumulator and the fetched data
+	a = a | fetched;
+
+	// update the status register if required
+	// if the result of a is 0, set the zero flag (Z) on or high
+	SetFlag(Z, a == 0x00);
+
+	// if bit 7 is equal to 1 (bit 7 is 0x80)
+	SetFlag(N, a & 0x80);
+
+	// this instruction may require an additional clock cycle
+	return 1;
 }
 
 uint8_t CPU6502::PHA()
@@ -863,4 +942,3 @@ uint8_t CPU6502::XXX()
 	// XXX - illegal
 	return 0;
 }
-

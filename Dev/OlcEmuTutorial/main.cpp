@@ -32,7 +32,7 @@ void setFlag(FLAGS6502 flag, bool v)
 	}
 }
 
-void printResultsTable ()
+void printResultsTable()
 {
 	std::cout << "Status register:\t" << std::bitset<8>(status) << std::endl;
 	std::cout << "Carry flag:\t\t" << (getFlag(C) & 0xff) << std::endl;
@@ -49,7 +49,7 @@ int main()
 {
 	char a;
 	std::cout << "Test" << std::endl;
-	
+
 	printResultsTable();
 	std::cin >> a;
 
