@@ -364,7 +364,7 @@ uint8_t CPU6502::ADC()
 
 uint8_t CPU6502::AND()
 {
-	// AND - logical and
+	// AND - logical AND
 	// between accumulator and data that's been fetched
 	// fetch the data - which populates the fetched variable
 	Fetch();
