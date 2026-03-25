@@ -1,5 +1,11 @@
 // loadRom.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // Example file: "D:\Roms\nesTest_USA.nes"
+// This program will read in a rom and print out hte first n-bytes of the rom in hex. 
+// This is to test the file reading and byte parsing of the rom loading process. 
+// The first 16 bytes of a nes rom should be the header, which contains information about the rom such 
+// as the number of prg and chr banks, mapper type, etc. This program will help verify that we are 
+// correctly reading the rom file and parsing the header information. We can also use this program 
+// to test different roms and see if we are correctly identifying the header information for each rom.
 
 #include <iostream>  
 #include <fstream>
@@ -20,14 +26,15 @@ int main()
     std::cout << "Loading ROM\n" << fN << nl;
     char* buffer = readFileBytes(fN);
 
-    int n = 1;
+    int n = 16;
 
-    std::cout << "Read n bytes from buffer? ";
+    /*std::cout << "Read n bytes from buffer? ";
     std::cin >> n;
     std::cout << nl;
 
-    std::cout << "Reading first " << (n - 1) << " bytes." << nl;
+    std::cout << "Reading first " << (n - 1) << " bytes." << nl;*/
 
+    std::cout << "First " << (n - 1) << " bytes of ROM:"  << nl;
     for (int i = 0; i < n - 1; i++) {
         std::cout << "0x" << std::hex << (unsigned int)buffer[i] << nl;
     }
