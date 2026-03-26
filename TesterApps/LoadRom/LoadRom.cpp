@@ -26,15 +26,14 @@ int main()
     std::cout << "Loading ROM\n" << fN << nl;
     char* buffer = readFileBytes(fN);
 
-    int n = 16;
+    int n = 1;
 
-    /*std::cout << "Read n bytes from buffer? ";
+    std::cout << "Read n bytes from buffer? ";
     std::cin >> n;
     std::cout << nl;
 
-    std::cout << "Reading first " << (n - 1) << " bytes." << nl;*/
+    std::cout << "Reading first " << (n - 1) << " bytes." << nl;
 
-    std::cout << "First " << (n - 1) << " bytes of ROM:"  << nl;
     for (int i = 0; i < n - 1; i++) {
         std::cout << "0x" << std::hex << (unsigned int)buffer[i] << nl;
     }
@@ -43,16 +42,10 @@ int main()
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
 char* readFileBytes(std::string name)
 {
-    std::ifstream fl(name);
+    // open in binary mode to prevent newline translation and allow seeking
+    std::ifstream fl(name, std::ios::binary);
 
     // start seeking at end of file to get file length
     fl.seekg(0, std::ios::end);
