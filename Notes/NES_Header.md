@@ -1,4 +1,5 @@
  Here’s a breakdown of what each byte means for your file:
+
 | Byte | Value | Meaning| 
 |------|-------|-------------------------------------------------------------------------| 
 | 0    | 0x4E  | 'N' (part of "NES" signature)                                           | 
@@ -15,20 +16,20 @@
 | 11   | 0x07  | Unused (should be zero, but sometimes used for unofficial info)         | 
 | 12-15| 0x00  | Unused padding                                                          |
 
-Key bytes explained
-•	Bytes 0–3: Correct "NES" signature.
-•	Byte 4 (0x08): 8 PRG ROM banks (128KB).
-•	Byte 5 (0x00): 0 CHR ROM banks (uses CHR RAM).
-•	Byte 6 (0x12):
-•	Bit 0: 0 = horizontal mirroring
-•	Bit 1: 1 = battery-backed RAM present
-•	Bit 2: 0 = no trainer
-•	Bit 3: 1 = four-screen VRAM
-•	Bits 4–7: lower nibble of mapper number (0x1)
-•	Byte 7 (0x08):
-•	Bits 4–7: upper nibble of mapper number (0x0)
-•	Bit 2: 0 = not NES 2.0
-•	Mapper number: (upper nibble of byte 7 << 4) | (lower nibble of byte 6) = (0x0 << 4) | 0x1 = 0x1 (Mapper 1, MMC1, which is correct for Zelda)
-•	Byte 8 (0x00): PRG RAM size (0 means 8KB by default)
-•	Byte 9 (0x00): NTSC
-•	Bytes 10–15: Not usually important for most emulators.
+Key bytes explained:
+ - Bytes 0–3: Correct "NES" signature.
+ - Byte 4 (0x08): 8 PRG ROM banks (128KB).
+ - Byte 5 (0x00): 0 CHR ROM banks (uses CHR RAM).
+ - Byte 6 (0x12):
+ - Bit 0: 0 = horizontal mirroring
+ - Bit 1: 1 = battery-backed RAM present
+ - Bit 2: 0 = no trainer
+ - Bit 3: 1 = four-screen VRAM
+ - Bits 4–7: lower nibble of mapper number (0x1)
+ - Byte 7 (0x08):
+ - Bits 4–7: upper nibble of mapper number (0x0)
+ - Bit 2: 0 = not NES 2.0
+ - Mapper number: (upper nibble of byte 7 << 4) | (lower nibble of byte 6) = (0x0 << 4) | 0x1 = 0x1 (Mapper 1, MMC1, which is correct for Zelda)
+ - Byte 8 (0x00): PRG RAM size (0 means 8KB by default)
+ - Byte 9 (0x00): NTSC
+ - Bytes 10–15: Not usually important for most emulators.
