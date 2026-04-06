@@ -1,5 +1,11 @@
 // loadRom.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // Example file: "D:\Roms\nesTest_USA.nes"
+// This program will read in a rom and print out hte first n-bytes of the rom in hex. 
+// This is to test the file reading and byte parsing of the rom loading process. 
+// The first 16 bytes of a nes rom should be the header, which contains information about the rom such 
+// as the number of prg and chr banks, mapper type, etc. This program will help verify that we are 
+// correctly reading the rom file and parsing the header information. We can also use this program 
+// to test different roms and see if we are correctly identifying the header information for each rom.
 
 #include <iostream>  
 #include <fstream>
@@ -36,16 +42,10 @@ int main()
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
 char* readFileBytes(std::string name)
 {
-    std::ifstream fl(name);
+    // open in binary mode to prevent newline translation and allow seeking
+    std::ifstream fl(name, std::ios::binary);
 
     // start seeking at end of file to get file length
     fl.seekg(0, std::ios::end);
