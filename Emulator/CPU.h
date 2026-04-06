@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "ROMHeader.h"
 
 class CPU
@@ -16,7 +17,7 @@ private:
 	std::string _romPath;
 
     // variable to hold the bytes of the ROM
-    uint8_t* _romData;
+	std::vector<uint8_t> _romData;
 
 	// the header of the ROM, which contains metadata about the ROM and how to load it
 	ROMHeader _header;

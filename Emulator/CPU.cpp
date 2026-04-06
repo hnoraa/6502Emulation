@@ -8,7 +8,6 @@ CPU::CPU(std::string romPath)
 
 CPU::~CPU()
 {
-    delete[] _romData;
 }
 
 void CPU::reset()
@@ -37,8 +36,7 @@ bool CPU::loadROM(std::string filePath)
     fl.close();
 
     // set the buffer to ret and clear ret
-    _romData = (uint8_t*)ret;
-    delete[] ret;
+    _romData = std::vector<uint8_t>(ret, ret + len);
 
 	return false;
 }
