@@ -4,8 +4,11 @@
 class ROMHeader
 {
 public:
-	ROMHeader(const uint8_t* buffer);
+	ROMHeader();
+	ROMHeader(const uint8_t* buffer, size_t length);
 	~ROMHeader();
+
+	void printHeaderBytes();
 private:
 	// the "NES" + 0x1A signature that identifies the file as a valid NES ROM
 	uint8_t _signature[4];
@@ -36,6 +39,6 @@ private:
 
 	// load the header from the rom
 	// return true if the header is valid
-	bool load(const uint8_t* buffer);
+	bool load(const uint8_t* buffer, size_t length);
 };
 

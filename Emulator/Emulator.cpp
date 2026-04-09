@@ -2,10 +2,11 @@
 //
 
 #include <iostream>
+#include "CPU.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	CPU cpu("C:\\Users\\aaron\\Source\\repos\\hnoraa\\zelda.nes", true);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

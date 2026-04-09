@@ -6,14 +6,15 @@
 class CPU
 {
 public:
-	CPU(std::string romPath);
+	CPU();
+	CPU(std::string romPath, bool debug);
 	~CPU();
 
 	void reset();
 	void step();
-
 	
 private:
+	bool _debug;
 	std::string _romPath;
 
     // variable to hold the bytes of the ROM
